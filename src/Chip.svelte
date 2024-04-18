@@ -14,5 +14,5 @@
 
 </script>
 
-<span class={"h-24 w-24 rounded-full "+colour_classes[colour]} />
+<span class={"h-12 w-12 md:h-24 md:w-24 rounded-full "+colour_classes[colour]} />
 

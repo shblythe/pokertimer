@@ -37,7 +37,7 @@
             <button disabled={$clock_running} on:click={start_timer} class="btn text-2xl">Start Timer</button>
             <button disabled={!$clock_running} on:click={reset_game} class="btn text-2xl">New Game</button>
         </div>
-        <div class="flex flex-row text-yellow-200 space-x-16 justify-center">
+        <div class="flex flex-row text-yellow-200 space-x-8 md:space-x-16 justify-center">
             <div class="flex flex-col">
                 <Chip colour="white"/>
                 <div class={"text-center font-bold text-4xl "+text_colour}>200</div>
@@ -56,7 +56,7 @@
             </div>
         </div>
         {#if $clock_running}
-            <div class={"flex flex-row text-5xl basis-1/5 font-bold justify-center "+text_colour}>
+            <div class={"flex flex-row text-3xl md:text-5xl basis-1/5 font-bold justify-center "+text_colour}>
                 Blinds: {$small_blind} / {$big_blind}
             </div>
             <div class={"flex flex-row text-6xl basis-1/5 font-bold justify-center "+text_colour}>
