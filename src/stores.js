@@ -3,7 +3,8 @@ import { writable, derived } from 'svelte/store';
 // const interval_time_s = 60 * 20;
 const interval_time_s = 40;
 
-const running = writable(false);
+const running = writable(localStorage.getItem("running")==="true"?true:false);
+running.subscribe(value => {localStorage.setItem("running", value)});
 
 export const clock_running = derived(
     running,
@@ -22,7 +23,7 @@ const create_time_clock = () => {
 const time_clock = create_time_clock();
 
 const create_poker_clock = () => {
-    const { subscribe, set, update } = writable(0);
+    const { subscribe, set, update } = writable(new Date(localStorage.getItem("poker_clock")));
 
     return {
         subscribe,
@@ -38,6 +39,7 @@ const create_poker_clock = () => {
 };
 
 export const poker_clock = create_poker_clock();
+poker_clock.subscribe(value => {localStorage.setItem("poker_clock", value)});
 
 const elapsed_time = derived(
     [poker_clock, time_clock],
