@@ -1,10 +1,12 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 
 // const interval_time_s = 60 * 20;
 const interval_time_s = 40;
 
 const running = writable(localStorage.getItem("running")==="true"?true:false);
 running.subscribe(value => {localStorage.setItem("running", value)});
+export const paused = writable(localStorage.getItem("paused")==="true"?true:false);
+paused.subscribe(value => {localStorage.setItem("paused", value)});
 
 export const clock_running = derived(
     running,
@@ -22,6 +24,9 @@ const create_time_clock = () => {
 
 const time_clock = create_time_clock();
 
+const paused_at = writable(new Date(localStorage.getItem("paused_at")));
+paused_at.subscribe(value => {localStorage.setItem("paused_at", value)});
+
 const create_poker_clock = () => {
     const { subscribe, set, update } = writable(new Date(localStorage.getItem("poker_clock")));
 
@@ -30,11 +35,30 @@ const create_poker_clock = () => {
         start: () => {
             set(new Date());
             running.set(true);
+            paused.set(false);
         },
         stop: () => {
             running.set(false);
+            paused.set(false);
         },
-        tick: () => time_clock.tick()
+        pause: () => {
+            console.log("pausing!");
+            paused.set(true);
+            paused_at.set(new Date());
+        },
+        resume: () => {
+            console.log(get(paused_at));
+            console.log(get(poker_clock));
+            console.log(get(paused_at) - get(poker_clock));
+            set(new Date(new Date() - (get(paused_at) - get(poker_clock))));
+            time_clock.tick();
+            paused.set(false);
+        },
+        tick: () => {
+            if (get(running) && !get(paused)) {
+                time_clock.tick();
+            }
+        }
     };
 };
 
@@ -42,8 +66,13 @@ export const poker_clock = create_poker_clock();
 poker_clock.subscribe(value => {localStorage.setItem("poker_clock", value)});
 
 const elapsed_time = derived(
-    [poker_clock, time_clock],
-    ([$poker_clock, $time_clock]) => Math.trunc(($time_clock-$poker_clock)/1000)
+    [poker_clock, time_clock, paused, paused_at],
+    ([$poker_clock, $time_clock, $paused, $paused_at]) => {
+        if ($paused)
+            return Math.trunc(($paused_at - $poker_clock) / 1000);
+        else
+            return Math.trunc(($time_clock - $poker_clock) / 1000);
+    }
 );
 
 const cycle_time_remaining = derived(
@@ -63,9 +92,9 @@ export const countdown = derived(
 );
 
 export const flash = derived(
-    [cycle_time_remaining, running],
-    ([$cycle_time_remaining, $running]) => {
-        return ($running && $cycle_time_remaining < 30 && $cycle_time_remaining % 2 == 1);
+    [cycle_time_remaining, running, paused],
+    ([$cycle_time_remaining, $running, $paused]) => {
+        return ($running && ($paused || $cycle_time_remaining < 30 && $cycle_time_remaining % 2 == 1));
     }
 );
 

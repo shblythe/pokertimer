@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import {
         small_blind, big_blind, clock_running, poker_clock,
-        countdown, flash
+        countdown, flash, paused
     } from './stores.js';
 
     import Chip from './Chip.svelte';
@@ -61,6 +61,10 @@
             </div>
             <div class={"flex flex-row text-6xl basis-1/5 font-bold justify-center "+text_colour}>
                 {$countdown}
+            </div>
+            <div class="flex flex-row space-x-8 justify-center m-8">
+                <button disabled={$paused} on:click={ () => {poker_clock.pause();} } class="btn text-2xl">Pause</button>
+                <button disabled={!$paused} on:click={ () => {poker_clock.resume();} } class="btn text-2xl">Resume</button>
             </div>
         {/if}
     </div>
