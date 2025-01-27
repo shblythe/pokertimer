@@ -63,8 +63,10 @@
                 {$countdown}
             </div>
             <div class="flex flex-row space-x-8 justify-center m-8">
+                <button disabled={!$clock_running} on:click={ () => {poker_clock.back5();} } class="btn text-2xl">-5 min</button>
                 <button disabled={$paused} on:click={ () => {poker_clock.pause();} } class="btn text-2xl">Pause</button>
                 <button disabled={!$paused} on:click={ () => {poker_clock.resume();} } class="btn text-2xl">Resume</button>
+                <button disabled={!$clock_running} on:click={ () => {poker_clock.forward5();} } class="btn text-2xl">+5 min</button>
             </div>
         {/if}
     </div>

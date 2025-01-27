@@ -1,7 +1,7 @@
 import { writable, derived, get } from 'svelte/store';
 
-// const interval_time_s = 60 * 20;
-const interval_time_s = 40;
+const interval_time_s = 60 * 20;
+const forward_back_step_s = 300;
 
 const running = writable(localStorage.getItem("running")==="true"?true:false);
 running.subscribe(value => {localStorage.setItem("running", value)});
@@ -53,6 +53,15 @@ const create_poker_clock = () => {
             set(new Date(new Date() - (get(paused_at) - get(poker_clock))));
             time_clock.tick();
             paused.set(false);
+        },
+        back5: () => {
+            console.log(get(poker_clock));
+            if ((+get(poker_clock) + forward_back_step_s * 1000) < +get(time_clock))
+                set(new Date(+ get(poker_clock) + forward_back_step_s * 1000));   // The unary + at the beginning converts to number
+            console.log(get(poker_clock));
+        },
+        forward5: () => {
+            set(new Date(get(poker_clock) - forward_back_step_s * 1000));
         },
         tick: () => {
             if (get(running) && !get(paused)) {
